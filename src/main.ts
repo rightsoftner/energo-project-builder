@@ -1,0 +1,1 @@
+console.log('Simple typeScript template is ready!');
