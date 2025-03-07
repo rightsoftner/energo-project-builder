@@ -1,7 +1,6 @@
 ![GitHub License](https://img.shields.io/github/license/rightsoftner/ts-simple-start)
 
-# ts-simple-start
-
+# energo-project-builder
 ## For start
 
 ```bash
