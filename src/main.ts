@@ -1,1 +1,3 @@
-console.log('Simple typeScript template is ready!');
+import { importETI } from '@/utilites/import/prices/eti' 
+
+importETI();
