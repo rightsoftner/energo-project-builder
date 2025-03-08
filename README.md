@@ -1,4 +1,4 @@
-![GitHub License](https://img.shields.io/github/license/rightsoftner/ts-simple-start)
+![GitHub License](https://img.shields.io/github/license/rightsoftner/energo-project-builder)
 
 # energo-project-builder
 ## For start
