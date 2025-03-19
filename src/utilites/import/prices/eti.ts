@@ -1,6 +1,7 @@
+import { app_conf } from '@/conf/app';
 import excelToJson from 'convert-excel-to-json';
 
-const pathToETIPrice = 'res/prices/ETI/ETI_Ukraine_01.10.2024.xlsx';
+const pathToETIPrice = app_conf.prices.import.eti;
 
 type TExcelSheet = {
     excelSheetName: string,
@@ -31,9 +32,17 @@ export const importETI = () => {
   const excelBookObj = getExcelBookObj(pathToETIPrice);
   if (!excelBookObj) throw new Error('File with prices is incorrect!');
   //getFormattedExcelBookObj(excelBookObj)
-  console.log(getFormattedExcelBookObj(excelBookObj));
+  const FormattedExcelBookObj = getFormattedExcelBookObj(excelBookObj);
+  //console.log(getFormattedExcelBookObj(excelBookObj));
+//  console.log(Object.keys(excelBookObj[FormattedExcelBookObj.main.excelSheetName]['0']));
+  //console.log(excelBookObj[FormattedExcelBookObj.main.excelSheetName][1]);
+const mainSheet = excelBookObj[FormattedExcelBookObj.main.excelSheetName];
+console.log(Object.keys(mainSheet[1]));
 
-
+for (const row in mainSheet) {
+  const arrColNames = Object.keys(row);
+  console.log(arrColNames);
+}
 
   // console.log(Object.keys(result));
   // console.log(Object.keys(result['Price_01.10.2024']));
