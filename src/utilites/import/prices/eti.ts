@@ -4,7 +4,11 @@ import excelToJson from 'convert-excel-to-json';
 const pathToETIPrice = app_conf.prices.import.eti;
 
 type TExcelSheet = {
-    excelSheetName: string,
+  excelSheetName: string,
+};
+
+type ExcelBookObj = {
+  [key: string]: any; // Adjust the value type as needed
 };
 
 class ETIPrice {
@@ -49,9 +53,9 @@ for (const row in mainSheet) {
   // console.log(typeof result['Price_01.10.2024'])
   // console.log(result['Price_01.10.2024']['7'])
   // result.map((row, index) => {
-    // if (index < 10) {
-      // console.log(row);
-    // }
+  // if (index < 10) {
+  // console.log(row);
+  // }
   // })
   // console.log(result);
 
@@ -69,11 +73,91 @@ const isNonEmptyEqualSheetNames = (equalSheetNames: TEqualSheetNames): boolean =
   return true;
 };
 
-//const getHeadersPositions = (excelBookObj: object, excelBookObj: {key:string}) => {
+function cleanString(input: string): string {
+  // Trim the string to remove leading and trailing whitespace
+  let cleaned = input.trim();
 
-///}
+  // Replace multiple spaces with a single space
+  cleaned = cleaned.replace(/\s+/g, ' ');
 
-const getFormattedExcelBookObj = (excelBookObj: object) => {
+  // Remove newline characters
+  cleaned = cleaned.replace(/\n/g, ' ');
+
+  return cleaned;
+}
+
+const numberToLetter = (num: number): string => {
+  // Ensure the number is within the valid range (0-25)
+  if (num < 0 || num > 25) {
+    throw new Error('Number out of range. Must be between 0 and 25.');
+  }
+
+  // Convert the number to the corresponding letter
+  const letter = String.fromCharCode(65 + num);
+  return letter;
+}
+
+const getHeadersPositions = (excelBookObj: ExcelBookObj, equalSheetNames: TEqualSheetNames): string | null => {
+  const headerEtalonNames = new Set([
+    'Код',
+    'Повне найменування',
+    'Ціна в Євро з ПДВ',
+    'Ціна в грн. з ПДВ',
+    'Знижка',
+    'Вхідна ціна',
+    'Вхідна ціна без ПДВ',
+    'Склад',
+  ]);
+
+  if (!Object.hasOwn(excelBookObj, equalSheetNames.main)) throw new Error(`Excel book don't have sheet with name: ${equalSheetNames.main}`);
+  //get rows names
+  for (const key in excelBookObj[equalSheetNames.main]) {
+    const columns = Object.keys(excelBookObj[equalSheetNames.main][key]);
+    //let headerRow = '';
+    let headerRow: string = '';
+    console.log(key);
+    // console.log(headerEtalonNames.has(cleanString(excelBookObj[equalSheetNames.main][4]['A'])));
+    // console.log(headerEtalonNames.has(cleanString(excelBookObj[equalSheetNames.main][4]['B'])));
+    // console.log(headerEtalonNames.has(cleanString(excelBookObj[equalSheetNames.main][4]['C'])));
+    // console.log(headerEtalonNames.has(cleanString(excelBookObj[equalSheetNames.main][4]['D'])));
+    // console.log(headerEtalonNames.has(cleanString(excelBookObj[equalSheetNames.main][4]['E'])));
+    // console.log(headerEtalonNames.has(cleanString(excelBookObj[equalSheetNames.main][4]['F'])));
+    // console.log(headerEtalonNames.has(cleanString(excelBookObj[equalSheetNames.main][4]['G'])));
+    // console.log(headerEtalonNames.has(cleanString(excelBookObj[equalSheetNames.main][4]['H'])));
+    //console.log(excelBookObj[equalSheetNames.main][key]['A']);
+    //cleanString(numberToLetter(Number.parseInt(cell)
+
+    //for (const cell in Object.keys(excelBookObj[equalSheetNames.main][key])) {
+    for (const cell in excelBookObj[equalSheetNames.main][key]) {
+        //console.log(numberToLetter(Number.parseInt(cell)));
+      //--console.log(excelBookObj[equalSheetNames.main][key][numberToLetter(Number.parseInt(cell))]);
+      //console.log(cell);
+      //console.log(typeof cell);
+      //console.log(excelBookObj[equalSheetNames.main][key][Number.parseInt(cell)]);
+      //console.log(excelBookObj[equalSheetNames.main][key][Number.parseInt(cell)]);
+      //  if (cell) {
+      //console.log(cleanString(excelBookObj[equalSheetNames.main][key][cell]));
+
+      //}
+      //console.log(cell);
+      //console.log(excelBookObj[equalSheetNames.main][key][cell]);
+      //console.log(cleanString(excelBookObj[equalSheetNames.main][key][cell]));
+      //if(!headerEtalonNames.has(cleanString(numberToLetter(Number.parseInt(cell))))) {
+      
+      if (!headerEtalonNames.has(cleanString(excelBookObj[equalSheetNames.main][key][cell]))) {
+        headerRow = '';
+        break;
+      } else {
+        headerRow = key;
+      }
+    }
+    return headerRow;
+  }
+  console.log('1-----------');
+  return null;
+}
+
+const getFormattedExcelBookObj = (excelBookObj: ExcelBookObj) => {
   const sheetsNames = getPriceSheets(excelBookObj);
   const equalSheetNames = {
     main: '',
@@ -109,8 +193,8 @@ const getFormattedExcelBookObj = (excelBookObj: object) => {
     }
   }
 
-  //const headerPodition = getHeadersPositions(excelBookObj, excelBookObj);
-
+  const headerPosition = getHeadersPositions(excelBookObj, equalSheetNames);
+  console.log(headerPosition);
   return etiPrice;
 };
 
@@ -118,7 +202,7 @@ const getPriceSheets = (exBookObj: object) => {
   return Object.keys(exBookObj)
 }
 
-const getExcelBookObj =  (path: string) => {
+const getExcelBookObj = (path: string) => {
   return excelToJson({
     sourceFile: path
   });
