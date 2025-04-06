@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/rightsoftner/energo-project-builder#readme",
   "devDependencies": {
+    "@types/convert-excel-to-json": "^1.7.4",
     "@types/jest": "latest",
     "@types/node": "latest",
     "jest": "latest",
