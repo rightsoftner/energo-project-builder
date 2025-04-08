@@ -9,7 +9,7 @@ export const calculation = () => {
     return {
       name: equipment.name,
       current: equipment.current,
-      section: resSection,
+      section: resSection?.section,
     }
   })
 }
