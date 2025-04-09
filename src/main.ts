@@ -1,3 +1,3 @@
-import { importETI } from '@/utilites/import/prices/eti' 
+import { importETI } from './utilites/imports/excel/prices/eti' 
 
 importETI();
