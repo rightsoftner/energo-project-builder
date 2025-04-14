@@ -14,3 +14,14 @@ export const  cleanString = (input: string): string => {
 
   return cleaned;
 }
+
+export const numberToLetter = (num: number): string => {
+  // Ensure the number is within the valid range (0-25)
+  if (num < 0 || num > 25) {
+    throw new Error('Number out of range. Must be between 0 and 25.');
+  }
+
+  // Convert the number to the corresponding letter
+  const letter = String.fromCharCode(65 + num);
+  return letter;
+}

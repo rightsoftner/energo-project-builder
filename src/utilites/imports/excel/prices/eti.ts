@@ -3,6 +3,7 @@ import { Excel } from '../excel';
 import { StringKeyedObject } from '../../../../types/universal';
 import { getFastDeepObjectCopy,
   cleanString,
+  numberToLetter,
  } from '../../../../utilites/universal';
 
 const pathToETIPrice = app_conf.prices.import.eti;
@@ -55,14 +56,16 @@ class ETIPrice {
         this.removedFromProduction = getFastDeepObjectCopy(excel.excelBook[sheet]);
       }
     }
+    if (!this.main || !this.orders || !this.newPositions || !this.removedFromProduction) throw new Error('ETI Price file is wrong or has changed format.');
   }
 }
 
 export const importETI = () => {
   //const result = importExcel(pathToETIPrice);
   const excel = new Excel(pathToETIPrice);
-  const result = excel.getSheetsNames();
-  console.log(result)
+  const result = new ETIPrice(excel);
+  //const result = excel.getSheetsNames();
+  console.log(result?.main?.[4]?.[numberToLetter(0)])
   /*
   //getFormattedExcelBookObj(excelBookObj)
   const FormattedExcelBookObj = getFormattedExcelBookObj(excelBookObj);
