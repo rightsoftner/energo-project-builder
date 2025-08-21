@@ -60,12 +60,61 @@ class ETIPrice {
   }
 }
 
+class ETIPriceElementsGroup {
+  group: number;
+  podgroup: number;
+  name: string;
+
+  constructor(group: number, podgroup: number, name: string) {
+    this.group = group;
+    this.podgroup = podgroup;
+    this.name = name;
+  }
+}
+
+class ETIPriceElement {
+  group: number;
+  podgroup: number;
+  code: string;
+  name: string;
+  price: number | null;
+
+  constructor(group: number, podgroup: number, code: string, name: string, price: number | null) {
+    this.group = group;
+    this.podgroup = podgroup;
+    this.code = code;
+    this.name = name;
+    this.price = price;
+
+  }
+}
+
 export const importETI = () => {
   //const result = importExcel(pathToETIPrice);
   const excel = new Excel(pathToETIPrice);
   const result = new ETIPrice(excel);
   //const result = excel.getSheetsNames();
-  console.log(result?.main?.[4]?.[numberToLetter(0)])
+//  console.log(result?.main?.[4]?.['A'])
+if (Array.isArray(result?.main)) {
+  const mainPriceList: ETIPriceElement[] = [];
+  let currentGroup = 0;
+  let currentPodgroup = 0;
+  for(const row of result.main) {
+    if (!row[numberToLetter(1)]) {
+
+    } else {
+
+    }
+    mainPriceList.push(new ETIPriceElement(0, 0, row[numberToLetter(0)], row[numberToLetter(1)], row[numberToLetter(6)]))
+//    console.log(row[numberToLetter(0)]);
+  }
+  console.group(mainPriceList);
+  console.log(numberToLetter(0)) 
+  console.log(result?.main[15][numberToLetter(1)]) 
+  console.log(result?.main[numberToLetter(1)]) 
+} else {
+  throw new Error('jhgjgjh');
+} 
   /*
   //getFormattedExcelBookObj(excelBookObj)
   const FormattedExcelBookObj = getFormattedExcelBookObj(excelBookObj);

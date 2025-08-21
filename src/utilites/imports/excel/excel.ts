@@ -14,6 +14,10 @@ export class Excel {
   getSheetsNames(): string[] {
     return Object.keys(this.excelBook);
   }
+
+  getSheetByName() {
+    
+  }
 }
 
 
