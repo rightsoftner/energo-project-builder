@@ -89,56 +89,166 @@ class ETIPriceElement {
   }
 }
 
-export const importETI = () => {
-  //const result = importExcel(pathToETIPrice);
-  const excel = new Excel(pathToETIPrice);
-  const result = new ETIPrice(excel);
-  //const result = excel.getSheetsNames();
-//  console.log(result?.main?.[4]?.['A'])
-if (Array.isArray(result?.main)) {
-  const mainPriceList: ETIPriceElement[] = [];
-  let currentGroup = 0;
-  let currentPodgroup = 0;
-  for(const row of result.main) {
-    if (!row[numberToLetter(1)]) {
+//type TrippingCharacteristic = "B" | "C" | "D" | undefined;
+type TrippingCharacteristic = "B" | "C" | "D";
 
-    } else {
+class CMiniatureCircuitBreaker {
+  companyID: number;
+  group: number;
+  podgroup: number;
+  code: string;
+  name: string;
+  poles: number;
+  hasN: boolean;
+  type: TrippingCharacteristic;
+  Inom: number;
+  RatedShortCircuitCapacity: number | undefined;
 
-    }
-    mainPriceList.push(new ETIPriceElement(0, 0, row[numberToLetter(0)], row[numberToLetter(1)], row[numberToLetter(6)]))
-//    console.log(row[numberToLetter(0)]);
+  constructor(
+    companyID: number,
+    group: number,
+    podgroup: number,
+    code: string,
+    name: string,
+    poles: number,
+    hasN: boolean,
+    type: TrippingCharacteristic,
+    Inom: number,
+    RatedShortCircuitCapacity: number | undefined,
+  ) {
+    this.companyID = companyID;
+    this.group = group;
+    this.podgroup = podgroup;
+    this.code = code;
+    this.name = name;
+    this.poles = poles;
+    this.hasN = hasN;
+    this.type = type;
+    this.Inom = Inom;
+    this.RatedShortCircuitCapacity = RatedShortCircuitCapacity;
   }
-  console.group(mainPriceList);
-  console.log(numberToLetter(0)) 
-  console.log(result?.main[15][numberToLetter(1)]) 
-  console.log(result?.main[numberToLetter(1)]) 
-} else {
-  throw new Error('jhgjgjh');
-} 
-  /*
-  //getFormattedExcelBookObj(excelBookObj)
-  const FormattedExcelBookObj = getFormattedExcelBookObj(excelBookObj);
-  //console.log(getFormattedExcelBookObj(excelBookObj));
-//  console.log(Object.keys(excelBookObj[FormattedExcelBookObj.main.excelSheetName]['0']));
-  //console.log(excelBookObj[FormattedExcelBookObj.main.excelSheetName][1]);
-const mainSheet = excelBookObj[FormattedExcelBookObj.main.excelSheetName];
-console.log(Object.keys(mainSheet[1]));
 
-for (const row in mainSheet) {
-  const arrColNames = Object.keys(row);
-  console.log(arrColNames);
 }
 
-  // console.log(Object.keys(result));
-  // console.log(Object.keys(result['Price_01.10.2024']));
-  // console.log(typeof result['Price_01.10.2024'])
-  // console.log(result['Price_01.10.2024']['7'])
-  // result.map((row, index) => {
-  // if (index < 10) {
-  // console.log(row);
-  // }
-  // })
-  // console.log(result);
-*/
+class CMiniatureCircuitBreakerAccessorie {
+  companyID: number;
+  group: number;
+  podgroup: number;
+  code: string;
+  name: string;
+
+  constructor(
+    companyID: number,
+    group: number,
+    podgroup: number,
+    code: string,
+    name: string,
+  ) {
+    this.companyID = companyID;
+    this.group = group;
+    this.podgroup = podgroup;
+    this.code = code;
+    this.name = name;
+  }
+}
+
+const parseRatedShortCircuitCapacity = (strRatedShortCircuitCapacity: string): number | undefined => {
+  //console.log(strRatedShortCircuitCapacity);
+  if ((strRatedShortCircuitCapacity?.startsWith("(") && (strRatedShortCircuitCapacity?.endsWith(")")))) {
+    return Number.parseFloat(strRatedShortCircuitCapacity.replace("(", ""));
+  } else return undefined;
+}
+
+type TPolesPlusN = {
+  poles: number;
+  hasN: boolean;
+}
+
+const parsePoles = (strPolesPlusN: string): TPolesPlusN => {
+  return {
+    poles: 0,
+    hasN: false,
+  }
+}
+
+function isTrippingCharacteristic(value: string | undefined): value is TrippingCharacteristic {
+  const validCharacteristics: TrippingCharacteristic[] = ['B', 'C', 'D'];
+  return typeof value === 'string' && validCharacteristics.includes(value as TrippingCharacteristic);
+}
+
+export const initImportETI = () => {
+  const excel = new Excel(pathToETIPrice);
+  const price = new ETIPrice(excel);
+  if (Array.isArray(price?.main)) {
+    const mainPriceList: ETIPriceElement[] = [];
+    const miniatureCircuitBreakersPriceList: CMiniatureCircuitBreaker[] = [];
+    const miniatureCircuitBreakersAccessoriePriceList: CMiniatureCircuitBreakerAccessorie[] = [];
+    
+    let currentGroup = 0;
+    let current1Podgroup = 0;
+    for(const row of price.main) {
+      if (!row[numberToLetter(1)]) {
+        const splittedFirstCell = (row[numberToLetter(0)]?.split(" "));
+        if (Array.isArray(splittedFirstCell)) {
+          const groupName = splittedFirstCell?.slice(1).join(" ");
+          const groupIDArray = splittedFirstCell[0]?.split(".");
+          if (Array.isArray(groupIDArray)) {
+            currentGroup = !Number.isNaN(Number.parseInt(groupIDArray[0])) ? Number.parseInt(groupIDArray[0]) : 0;
+            current1Podgroup = !Number.isNaN(Number.parseInt(groupIDArray[1])) ? Number.parseInt(groupIDArray[1]) : 0;
+            //console.log(`${currentGroup}.${current1Podgroup} ${groupName}`)
+            //console.log(`${currentGroup} ${current1Podgroup}`);
+          }
+        }
+      } else {
+        if ((currentGroup !== 0) && (current1Podgroup !== 0)) {
+          const element = new ETIPriceElement(currentGroup, current1Podgroup, row[numberToLetter(0)], row[numberToLetter(1)], row[numberToLetter(6)]);
+          mainPriceList.push(element);
+          // Автоматичні вимикачі та аксесуари до них
+          if (currentGroup === 1) {
+            const elementStrArr = element.name.split(" ");
+            if (`${elementStrArr[0]} ${elementStrArr[1]}` === 'Авт. вимикач') {
+              const startIndex = (elementStrArr[2] === "ETIMAT") ? 4 : 3;
+              //const trippingCharacteristic = ((elementStrArr[startIndex + 1] === "B") || (elementStrArr[startIndex + 1] === "C") || (elementStrArr[startIndex + 1] === "D")) ? elementStrArr[startIndex + 1] : undefined; 
+              if (isTrippingCharacteristic(elementStrArr[startIndex + 1])) {
+                miniatureCircuitBreakersPriceList.push(new CMiniatureCircuitBreaker(
+                  1,
+                  currentGroup,
+                  current1Podgroup,
+                  element.code,
+                  element.name,
+                  Number.parseInt(elementStrArr[startIndex]), 
+                  false,
+                  elementStrArr[startIndex + 1], 
+                  Number.parseInt(elementStrArr[startIndex + 2]),
+                  parseRatedShortCircuitCapacity(elementStrArr[startIndex + 3]))
+                );
+                console.table(elementStrArr);
+              }
+            } else {
+              miniatureCircuitBreakersAccessoriePriceList.push(new CMiniatureCircuitBreakerAccessorie(
+                1,
+                currentGroup,
+                current1Podgroup,
+                element.code,
+                element.name,
+              ));
+            }
+          }
+        }
+      }
+      //    console.log(row[numberToLetter(0)]);
+    }
+      //console.log(mainPriceList);
+    //console.log(miniatureCircuitBreakersPriceList);
+    //console.log(miniatureCircuitBreakersAccessoriePriceList);
+
+
+    // console.group(mainPriceList);
+    // console.log(numberToLetter(0)) 
+    // console.log(result?.main[15][numberToLetter(1)]) 
+    // console.log(result?.main[numberToLetter(1)]) 
+  } else {
+    throw new Error('jhgjgjh');
+  } 
 }
 

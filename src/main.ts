@@ -1,5 +1,5 @@
-import { importETI } from './utilites/imports/excel/prices/eti' 
+import { initImportETI } from './utilites/imports/excel/prices/eti' 
 import { calculation } from './utilites/calc/calculation'
-importETI();
+initImportETI();
 //1importETI();
 //console.log(calculation());
