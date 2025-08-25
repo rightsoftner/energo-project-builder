@@ -33,6 +33,7 @@
     "typescript": "latest"
   },
   "dependencies": {
-    "convert-excel-to-json": "^1.7.0"
+    "convert-excel-to-json": "^1.7.0",
+    "tsx": "^4.20.5"
   }
 }

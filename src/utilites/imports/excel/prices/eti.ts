@@ -208,8 +208,8 @@ export const initImportETI = () => {
             const elementStrArr = element.name.split(" ");
             if (`${elementStrArr[0]} ${elementStrArr[1]}` === 'Авт. вимикач') {
               const startIndex = (elementStrArr[2] === "ETIMAT") ? 4 : 3;
-              //const trippingCharacteristic = ((elementStrArr[startIndex + 1] === "B") || (elementStrArr[startIndex + 1] === "C") || (elementStrArr[startIndex + 1] === "D")) ? elementStrArr[startIndex + 1] : undefined; 
-              if (isTrippingCharacteristic(elementStrArr[startIndex + 1])) {
+              const type = elementStrArr[startIndex + 1];
+              if (isTrippingCharacteristic(type)) {
                 miniatureCircuitBreakersPriceList.push(new CMiniatureCircuitBreaker(
                   1,
                   currentGroup,
@@ -218,7 +218,7 @@ export const initImportETI = () => {
                   element.name,
                   Number.parseInt(elementStrArr[startIndex]), 
                   false,
-                  elementStrArr[startIndex + 1], 
+                  type, 
                   Number.parseInt(elementStrArr[startIndex + 2]),
                   parseRatedShortCircuitCapacity(elementStrArr[startIndex + 3]))
                 );
